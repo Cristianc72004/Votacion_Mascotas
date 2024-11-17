@@ -151,29 +151,15 @@
     
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-  
+
     document.addEventListener('DOMContentLoaded', () => {
       const form = document.getElementById('votacionForm');
       const modal = document.getElementById('modal');
       const modalMessage = document.getElementById('modalMessage');
       const closeModal = document.getElementById('closeModal');
       
-      const nombreInput = document.getElementById('nombre');
-      const correoInput = document.getElementById('correo');
-      
       let selectedMascota = '';
-  
-      // Intenta cargar datos guardados previamente en localStorage
-      const storedNombre = localStorage.getItem('nombre');
-      const storedCorreo = localStorage.getItem('correo');
-      
-      if (storedNombre) {
-        nombreInput.value = storedNombre;
-      }
-      if (storedCorreo) {
-        correoInput.value = storedCorreo;
-      }
-  
+
       // Resaltar mascota seleccionada
       const labels = document.querySelectorAll('input[name="mascota"]');
       labels.forEach(label => {
@@ -186,28 +172,24 @@
           selectedMascota = label.value;
         });
       });
-  
+
       // Enviar formulario
       form.addEventListener('submit', (e) => {
         e.preventDefault();
-  
-        const nombre = nombreInput.value;
-        const correo = correoInput.value;
-  
+
+        const nombre = document.getElementById('nombre').value;
+        const correo = document.getElementById('correo').value;
+
         if (!selectedMascota) {
           alert("Por favor, selecciona una mascota.");
           return;
         }
-  
+
         if (!nombre || !correo) {
           alert("Por favor, completa tu nombre y correo.");
           return;
         }
-  
-        // Guarda los datos en localStorage para futuras visitas
-        localStorage.setItem('nombre', nombre);
-        localStorage.setItem('correo', correo);
-  
+
         const votacionRef = ref(db, 'votaciones/' + push(ref(db, 'votaciones')).key);
         set(votacionRef, {
           nombre: nombre,
@@ -221,13 +203,12 @@
           alert("Hubo un error al registrar tu voto.");
         });
       });
-  
+
       // Cerrar el modal
       closeModal.addEventListener('click', () => {
         modal.style.display = 'none';
       });
     });
   </script>
-  
 </body>
 </html>
