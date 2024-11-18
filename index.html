@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Votación de Mascotas Favoritas</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <style>
     .selected {
       border-color: #22c55e !important;
@@ -136,8 +138,8 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-    import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
-    
+    import { getDatabase, ref, push, set, get, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+  
     // Configuración de Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyDn_FKTJ_BHQc_tCrL9TdOlcwVIbePUt7c",
@@ -148,16 +150,12 @@
       appId: "1:531227036765:web:4f3cc369873d2b088b11b4",
       measurementId: "G-2D724P7JHZ"
     };
-    
+  
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
   
     document.addEventListener('DOMContentLoaded', () => {
       const form = document.getElementById('votacionForm');
-      const modal = document.getElementById('modal');
-      const modalMessage = document.getElementById('modalMessage');
-      const closeModal = document.getElementById('closeModal');
-      
       const nombreInput = document.getElementById('nombre');
       const correoInput = document.getElementById('correo');
       
@@ -166,7 +164,7 @@
       // Intenta cargar datos guardados previamente en localStorage
       const storedNombre = localStorage.getItem('nombre');
       const storedCorreo = localStorage.getItem('correo');
-      
+  
       if (storedNombre) {
         nombreInput.value = storedNombre;
       }
@@ -187,6 +185,14 @@
         });
       });
   
+      // Verificar si el correo ya ha votado
+      const verificarVotacion = (correo) => {
+        const votacionesRef = ref(db, 'votaciones');
+        const queryRef = query(votacionesRef, orderByChild('correo'), equalTo(correo));
+  
+        return get(queryRef);
+      };
+  
       // Enviar formulario
       form.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -195,43 +201,73 @@
         const correo = correoInput.value;
   
         if (!selectedMascota) {
-          alert("Por favor, selecciona una mascota.");
+          Swal.fire({
+            icon: 'error',
+            title: '¡Error!',
+            text: 'Por favor, selecciona una mascota.',
+          });
           return;
         }
   
         if (!nombre || !correo) {
-          alert("Por favor, completa tu nombre y correo.");
+          Swal.fire({
+            icon: 'error',
+            title: '¡Error!',
+            text: 'Por favor, completa tu nombre y correo.',
+          });
           return;
         }
   
-        // Guarda los datos en localStorage para futuras visitas
-        localStorage.setItem('nombre', nombre);
-        localStorage.setItem('correo', correo);
+        // Verificar si el correo ya ha votado
+        verificarVotacion(correo).then(snapshot => {
+          if (snapshot.exists()) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Ya has votado',
+              text: 'Este correo electrónico ya ha votado. Solo puedes votar una vez.',
+            });
+            return;
+          }
   
-        const votacionRef = ref(db, 'votaciones/' + push(ref(db, 'votaciones')).key);
-        set(votacionRef, {
-          nombre: nombre,
-          correo: correo,
-          mascota: selectedMascota
-        }).then(() => {
-          modalMessage.textContent = `¡Gracias, ${nombre}! Has votado por ${selectedMascota}.`;
-          modal.style.display = 'block';
-          
-          // Redirigir a la página de resultados
-          setTimeout(() => {
-            window.location.href = 'resultados.html';
-          }, 2000);  // Esperar 2 segundos antes de redirigir
-        }).catch((error) => {
-          console.error("Error al registrar voto: ", error);
-          alert("Hubo un error al registrar tu voto.");
+          // Si no ha votado, guardar los datos
+          localStorage.setItem('nombre', nombre);
+          localStorage.setItem('correo', correo);
+  
+          const votacionRef = ref(db, 'votaciones/' + push(ref(db, 'votaciones')).key);
+          set(votacionRef, {
+            nombre: nombre,
+            correo: correo,
+            mascota: selectedMascota
+          }).then(() => {
+            Swal.fire({
+              icon: 'success',
+              title: '¡Gracias por votar!',
+              text: `¡Gracias, ${nombre}! Has votado por ${selectedMascota}.`,
+              confirmButtonText: 'Cerrar',
+            }).then(() => {
+              // Redirigir a la página de resultados después de cerrar la alerta
+              window.location.href = 'resultados.html';
+            });
+          }).catch((error) => {
+            console.error("Error al registrar voto: ", error);
+            Swal.fire({
+              icon: 'error',
+              title: '¡Error!',
+              text: 'Hubo un error al registrar tu voto.',
+            });
+          });
+        }).catch(error => {
+          console.error("Error al verificar correo: ", error);
+          Swal.fire({
+            icon: 'error',
+            title: '¡Error!',
+            text: 'Hubo un error al verificar el correo.',
+          });
         });
-      });
-  
-      // Cerrar el modal
-      closeModal.addEventListener('click', () => {
-        modal.style.display = 'none';
       });
     });
   </script>
+  
+  
 </body>
 </html>
