@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subir Mascota</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-b from-blue-100 via-white to-blue-50 min-h-screen flex items-center justify-center">
+  <div class="bg-white shadow-2xl rounded-lg p-8 max-w-md w-full border-t-8 border-blue-400">
+    <h1 class="text-3xl font-extrabold text-gray-800 text-center mb-6">
+      🐾 Subir Mascota 🐾
+    </h1>
+    <form id="subirForm" class="space-y-6" method="POST" enctype="multipart/form-data" action="upload.php">
+      <div>
+        <label for="nombreMascota" class="block text-lg font-medium text-gray-700">Nombre de la Mascota:</label>
+        <input 
+          type="text" 
+          id="nombreMascota" 
+          name="nombreMascota" 
+          placeholder="Escribe el nombre de tu mascota" 
+          required 
+          class="w-full mt-2 p-3 border rounded-lg focus:ring-blue-400 focus:border-blue-400">
+      </div>
+      <div>
+        <label for="imagenMascota" class="block text-lg font-medium text-gray-700">Subir Imagen:</label>
+        <input 
+          type="file" 
+          id="imagenMascota" 
+          name="imagenMascota" 
+          accept="image/*" 
+          required 
+          class="w-full mt-2 p-3 border rounded-lg focus:ring-blue-400 focus:border-blue-400">
+      </div>
+      <div class="text-center">
+        <button 
+          type="submit" 
+          class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg shadow-lg transition duration-300">
+          Subir Mascota
+        </button>
+      </div>
+    </form>
+  </div>
+</body>
+</html>
