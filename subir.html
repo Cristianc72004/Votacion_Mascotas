@@ -5,12 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Subir Mascota</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- Librería de SweetAlert -->
 </head>
 <body class="bg-gradient-to-b from-blue-100 via-white to-blue-50 min-h-screen flex items-center justify-center">
   <div class="bg-white shadow-2xl rounded-lg p-8 max-w-md w-full border-t-8 border-blue-400">
     <h1 class="text-3xl font-extrabold text-gray-800 text-center mb-6">
       🐾 Subir Mascota 🐾
     </h1>
+    <script>
+      // Leer el parámetro de éxito en la URL (si existe)
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('success') === 'true') {
+        Swal.fire({
+          icon: 'success',
+          title: '¡Mascota añadida!',
+          text: 'Tu mascota ha sido subida con éxito.',
+          confirmButtonText: 'Aceptar',
+          timer: 3000
+        }).then(() => {
+          // Eliminar el parámetro de la URL después de mostrar el mensaje
+          const newURL = window.location.origin + window.location.pathname;
+          window.history.replaceState({}, document.title, newURL);
+        });
+      }
+    </script>
+
     <form id="subirForm" class="space-y-6" method="POST" enctype="multipart/form-data" action="upload.php">
       <div>
         <label for="nombreMascota" class="block text-lg font-medium text-gray-700">Nombre de la Mascota:</label>
@@ -40,6 +59,17 @@
         </button>
       </div>
     </form>
+    <div class="mt-8 flex justify-between">
+      <a href="eliminar.html" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300">
+        Eliminar Mascota
+      </a>
+      <a href="resultados.html" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300">
+        Resultados
+      </a>
+      <a href="index.html" class="bg-gray-500 hover:bg-green-300 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300">
+        Votación
+      </a>
+    </div>
   </div>
 </body>
 </html>

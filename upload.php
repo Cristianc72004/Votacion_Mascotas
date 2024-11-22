@@ -17,8 +17,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         file_put_contents($jsonFile, json_encode($mascotas, JSON_PRETTY_PRINT));
 
-        // Redirigir a index.html después de procesar la imagen
-        header('Location: index.html');
+        // Redirigir a subir.html con el parámetro de éxito
+        header('Location: subir.html?success=true');
         exit();
     } else {
         echo "Error al subir la imagen.";
