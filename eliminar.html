@@ -63,7 +63,7 @@
             .then(data => {
               if (data === 'success') {
                 Swal.fire('¡Eliminado!', 'La mascota ha sido eliminada.', 'success').then(() => {
-                  location.reload(); // Recargar la página
+                    window.location.href = 'subir.html';
                 });
               } else {
                 Swal.fire('Error', 'No se pudo eliminar la mascota.', 'error');
