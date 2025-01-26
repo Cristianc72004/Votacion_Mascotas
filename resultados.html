@@ -51,10 +51,12 @@
     <p>Creado con ❤️ por el equipo de Votación de Mascotas.</p>
   </footer>
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
-
-    // Configuración de Firebase
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-analytics.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js"; // Importación correcta
+  
+    // Your web app's Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyDn_FKTJ_BHQc_tCrL9TdOlcwVIbePUt7c",
       authDomain: "mascotas-393d3.firebaseapp.com",
@@ -65,20 +67,24 @@
       appId: "1:531227036765:web:4f3cc369873d2b088b11b4",
       measurementId: "G-2D724P7JHZ"
     };
-
+  
+    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const votacionesRef = ref(db, 'votaciones');
-
+    const analytics = getAnalytics(app);
+  
+    // Initialize Database
+    const db = getDatabase(app); // Inicializar base de datos
+    const votacionesRef = ref(db, 'votaciones'); // Referencia a la base de datos
+  
     // Inicializar el gráfico
     const ctx = document.getElementById('resultadosChart').getContext('2d');
     const resultadosChart = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: [],  // Inicialmente vacío, se actualizará dinámicamente
+        labels: [], // Inicialmente vacío
         datasets: [{
           label: 'Votos',
-          data: [],  // Inicialmente vacío, se actualizará dinámicamente
+          data: [], // Inicialmente vacío
           backgroundColor: ['#4CAF50', '#FFC107', '#03A9F4', '#FF5722'],
           borderColor: ['#388E3C', '#FFA000', '#0288D1', '#D84315'],
           borderWidth: 1
@@ -98,47 +104,43 @@
         }
       }
     });
-
+  
     // Obtener y mostrar los resultados de la votación
     onValue(votacionesRef, (snapshot) => {
       const data = snapshot.val();
-      
       const votos = {};
       let totalVotos = 0;
-
-      // Recopilar todos los votos y nombres de las mascotas
+  
+      // Recopilar todos los votos
       for (let key in data) {
         const mascota = data[key].mascota;
-        
         if (!votos[mascota]) {
           votos[mascota] = 0;
         }
-        
         votos[mascota]++;
         totalVotos++;
       }
-
+  
       // Actualizar la información en el DOM
       document.getElementById('totalVotos').textContent = totalVotos;
-
-      // Obtener las mascotas (nombres) de las claves del objeto votos
-      const mascotas = Object.keys(votos);
-
+  
       // Determinar la mascota ganadora
+      const mascotas = Object.keys(votos);
       const maxVotos = Math.max(...Object.values(votos));
       const mascotasGanadoras = mascotas.filter(mascota => votos[mascota] === maxVotos);
-
+  
       if (mascotasGanadoras.length > 1) {
         document.getElementById('mascotaGanadora').textContent = 'Empate entre: ' + mascotasGanadoras.join(' y ');
       } else {
         document.getElementById('mascotaGanadora').textContent = mascotasGanadoras[0];
       }
-
+  
       // Actualizar el gráfico
       resultadosChart.data.labels = mascotas;
       resultadosChart.data.datasets[0].data = Object.values(votos);
       resultadosChart.update();
     });
   </script>
+  
 </body>
 </html>
