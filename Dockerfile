@@ -1,10 +1,11 @@
 FROM php:8.0-apache
 
-# Crear directorios y establecer permisos adecuados
+# Crear directorio y archivo mascotas.json con permisos adecuados
 RUN mkdir -p /var/www/html/img \
     && touch /var/www/html/mascotas.json \
-    && chown -R www-data:www-data /var/www/html/img /var/www/html/mascotas.json \
-    && chmod -R 777 /var/www/html/img /var/www/html/mascotas.json
+    && chown -R www-data:www-data /var/www/html \
+    && chmod -R 775 /var/www/html \
+    && chmod 666 /var/www/html/mascotas.json
 
 COPY . /var/www/html/
 
